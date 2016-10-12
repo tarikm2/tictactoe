@@ -33,17 +33,17 @@ Agent.prototype.selectMove = function(board) {
 	if (mode > 0) {
 		//console.log("Blocked play");
 		return mode;
-	} else {
-		
-		mode = attack(board);
-		if (mode > 0) {
-			return mode;
-		}
-		else {
-			mode = setUp(board);
-			return mode;
-		}
 	}
+	mode = attack(board);
+	if (mode > 0) {
+		return mode;
+	}
+	mode = setUp(board);
+	if (mode > 0) {
+		return mode;
+	}
+	
+	return freeCells[Math.floor(Math.random() * freeCells.length)];
 }
 
 function setUp(board) {
@@ -64,6 +64,7 @@ function setUp(board) {
 	else
 		array = board.O;
 	
+	var max = 0;
 	for (var i = 0; i < freeCells.length-1; i++) {
 		for (var j = i+1; j < freeCells.length; j++) {
 			var point1 = freeCells[i];
@@ -72,33 +73,39 @@ function setUp(board) {
 			
 			if (point3 < 10 && point3 > 0 && point3 != point1 && point3 != point2 && (board.cellFree(point3) || contains(array, point3))){
 				//put point 1 in map;
-				if (keys[point1] == point1)
-					frequency[point1] = frequency[point1] + 1; 
+				if (keys[point1] == point1) {//if point1 already exists, increament
+					if (board.cellFree(point1)) 
+						frequency[point1] = frequency[point1] + 1; 
+				}
 				else{
 					keys[point1] = point1;
 					frequency[point1] = 1;
 				}
 				//put point 2 in map
-				if (keys[point2] == point2)
-					frequency[point2]= frequency[point2] + 1;
+				if (keys[point2] == point2) { //if point2 already exists, increament
+					if (board.cellFree(point2))
+						frequency[point2]= frequency[point2] + 1;
+				}
 				else{
 					keys[point2] = point2;
 					frequency[point2] = 1;
 				}
 				//put point 3 in map
-				if (keys[point3] == point3)
-					frequency[point3] = frequency[point3] + 1;
+				if (keys[point3] == point3) { //if point3 already exists, increament
+					if (board.cellFree(point3))
+						frequency[point3] = frequency[point3] + 1;
+				}
 				else{
 					keys[point3] = point3;
 					frequency[point3] = 1;
 				}
+				max = point1;
+				if (frequency[point2] > frequency[max])
+					max = point2;
+				if (frequency[point3] > frequency[max])
+					max = point3;
 			}
 		}
-	}
-	//var max = frequency[frequency.length - 1];
-	for (var i = 1; i < frequency.length; i++) {
-		if (frequency[i] > frequency[max])
-			max = i;
 	}
 	return keys[max];
 }
