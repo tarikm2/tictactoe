@@ -30,6 +30,8 @@ GameBoard.prototype.move = function (cell) {
         this.playerOne ? this.X.push(cell) : this.O.push(cell);
         var c = this.cells[cell - 1];
         if (this.mainboard) {
+
+            //console.log(cell);
             c.className = this.playerOne ? "X" : "O";
             c.innerHTML = this.playerOne ? "X" : "O";
         }
@@ -117,7 +119,7 @@ window.onload = function () {
 
     var gb = new GameBoard();
     var playerOne = new Agent();
-    var playerTwo = new Agent();
+    var playerTwo = new AgentTwo();
 
     newGame.onclick = function () {
         gb.reset();
@@ -163,6 +165,7 @@ window.onload = function () {
     games.push([6, 5, 7]);
 
     // win
+ 
     games.push([5, 8, 2, 1]);
     games.push([5, 9, 7, 2]);
     games.push([5, 7, 1]);
@@ -195,8 +198,10 @@ window.onload = function () {
 
     function testGame(gb, cond) {
         if (cond !== undefined) {
+            console.log("correct state : " + states[indexer - 1] + "    our state  :  " + cond);
             if (cond === states[indexer++]) {
                 score++;
+                
                 console.log(cond === states[indexer - 1]);
             }
         }
@@ -206,7 +211,9 @@ window.onload = function () {
             for (var i = 0; i < list.length; i++) {
                 gb.move(list[i]);
             }
+            console.log("playing a game");
             gb.playGame(playerOne, playerTwo, testGame);
+            
         }
         else {
             console.log(score + " tests passed.");

@@ -1,157 +1,102 @@
-// Tic Tac Toe
-var Agent = function () { //creating an agent object
+
+var Agent = function () {
+
+
+} //creating an agent object
+
+//the select method uses minMax to recursively find a solution
+Agent.prototype.selectMove = function (board) {
+
+
+    var result = minMax(board).move;
+    return result;
 
 }
 
-/*Agent.prototype.selectMove = function(board) {
-    var freeCells = [];
-	//loop through all boards in the board and store all free ones in the freecells list
-    for (var i = 1; i < 10; i++) {
-        if (board.cellFree(i)) freeCells.push(i);
+function minMax(board) {
+
+    //if the game is over, return the apparent value of the game
+    var gameResult = board.gameOver();
+    if (gameResult != 0) {
+        if (board.playerOne) {
+            if (gameResult == 1) return { score: 1, move: null }; //board.X[board.X.length - 1] };
+            else if (gameResult == 2) return { score: -1, move: null}; //board.X[board.X.length - 1] };
+            else if (gameResult == 3) return { score: 0, move: null}; //board.X[board.X.length - 1] };
+        } else {
+            if (gameResult == 1) return { score: -1, move: null}; //board.O[board.O.length - 1] };
+            else if (gameResult == 2) return { score: 1, move: null};//board.O[board.O.length - 1] };
+            else if (gameResult == 3) return { score: 0, move: null};//board.O[board.O.length - 1] };
+        }
     }
-	//return a random feee spot
-	var returnNumber = freeCells[Math.floor(Math.random() * freeCells.length)];
-	
-	/*if (board.playerOne)
-		console.log("Player one played X at " + returnNumber);
-	else
-		console.log("Player two played O at " + returnNumber);
-    return returnNumber;
-}*/
 
-Agent.prototype.selectMove = function(board) {
-    var freeCells = [];
-	//loop through all boards in the board and store all free ones in the freecells list
+    gameScores = [];
+    gameMoves = [];
+    //for every free move we can make on the board
     for (var i = 1; i < 10; i++) {
-        if (board.cellFree(i)) freeCells.push(i);
+        if (board.cellFree(i)) {
+            board.move(i);
+
+            //recursive section, for every move store the result and move number
+            var res = minMax(board);
+            gameScores.push(res.score);
+            gameMoves.push(i);
+            
+        }
     }
-	if (board.cellFree(5))
-		return 5;
-	
-	//call a defendMethod
-	var mode = block(board);
-	if (mode > 0) {
-		//console.log("Blocked play");
-		return mode;
-	}
-	mode = attack(board);
-	if (mode > 0) {
-		return mode;
-	}
-	mode = setUp(board);
-	if (mode > 0) {
-		return mode;
-	}
-	
-	return freeCells[Math.floor(Math.random() * freeCells.length)];
+
+    //console.log(" Game Moves : " + gameMoves + "  GameScores : " + gameScores);
+    if (board.playerOne) {
+        var maxScore = -1;
+        var maxMove = -1;
+        for (var i = 0; i < gameScores.length; i++) {
+            if (gameScores[i] > maxScore) {
+                maxScore = gameScores[i];
+                maxMove = gameMoves[i];
+                
+            }
+        }
+        //console.log("the max game move was : " + maxMove);
+        return { score: maxScore, move: maxMove };
+
+    } else {
+        var minScore = 1;
+        var minMove = -1;
+        for (var i = 0; i < gameScores.length; i++) {
+            if (gameScores[i] < minScore) {
+                minScore = gameScores[i];
+                minMove = gameMoves[i];
+            }
+        }
+        return { score: minScore, move: minMove };
+    }
 }
 
-function setUp(board) {
-	 var freeCells = [];
-	//loop through all boards in the board and store all free ones in the freecells list
+
+
+
+
+
+
+
+
+
+
+
+var AgentTwo = function () {
+
+
+} //creating an agent object
+
+//the select method uses minMax to recursively find a solution
+AgentTwo.prototype.selectMove = function (board) {
+
+
+    var choices = [];
+
     for (var i = 1; i < 10; i++) {
-        if (board.cellFree(i)) freeCells.push(i);
+        if (board.cellFree(i)) choices.push(i);
     }
-	if (freeCells.length == 1)
-		return freeCells[0];
-	
-	var xValues = board.X, yValues = board.Y;
-	var keys = [], frequency = [];
-	
-	var array = [];
-	if (board.playerOne)
-		array = board.X;
-	else
-		array = board.O;
-	
-	var max = 0;
-	for (var i = 0; i < freeCells.length-1; i++) {
-		for (var j = i+1; j < freeCells.length; j++) {
-			var point1 = freeCells[i];
-			var point2 = freeCells[j];
-			var point3 = 15 - (point1 + point2);
-			
-			if (point3 < 10 && point3 > 0 && point3 != point1 && point3 != point2 && (board.cellFree(point3) || contains(array, point3))){
-				//put point 1 in map;
-				if (keys[point1] == point1) {//if point1 already exists, increament
-					if (board.cellFree(point1)) 
-						frequency[point1] = frequency[point1] + 1; 
-				}
-				else{
-					keys[point1] = point1;
-					frequency[point1] = 1;
-				}
-				//put point 2 in map
-				if (keys[point2] == point2) { //if point2 already exists, increament
-					if (board.cellFree(point2))
-						frequency[point2]= frequency[point2] + 1;
-				}
-				else{
-					keys[point2] = point2;
-					frequency[point2] = 1;
-				}
-				//put point 3 in map
-				if (keys[point3] == point3) { //if point3 already exists, increament
-					if (board.cellFree(point3))
-						frequency[point3] = frequency[point3] + 1;
-				}
-				else{
-					keys[point3] = point3;
-					frequency[point3] = 1;
-				}
-				max = point1;
-				if (frequency[point2] > frequency[max])
-					max = point2;
-				if (frequency[point3] > frequency[max])
-					max = point3;
-			}
-		}
-	}
-	return keys[max];
-}
 
-function contains(array, value) {
-	for (var i = 0; i < array.length; i++) {
-		if (array[i] == value)
-			return true;
-	}
-	return false;
-}
+    return choices[Math.floor(Math.random() * choices.length)];;
 
-function attack(board){
-	var array = [];
-	if (board.playerOne)
-		array = board.X;
-	else
-		array = board.O;
-	
-	for (var i = 0; i < array.length; i++) {
-		for (var j = 1; j < array.length; j++) {
-			var spot = 15 - (array[i] + array[j]);
-			if (spot > 0 && spot < 10 && board.cellFree(spot)) {
-				return spot;
-			}
-		}
-	}
-	return -1;
-}
-
-function block(board){
-	var array = [];
-	
-	if (board.playerOne)
-		array = board.O;
-	else 
-		array = board.X;
-	
-	var b = array.length-1;
-	var value = array[b];
-	
-	for(var i = 0; i < array.length;i++){
-		 var k = 15 - (value + array[i]);
-		if(k < 10 && k > 0 && board.cellFree(k)){
-			return k;
-		}
-	}
-	return -1;
 }
