@@ -30,8 +30,8 @@ GameBoard.prototype.move = function (cell) {
         this.playerOne ? this.X.push(cell) : this.O.push(cell);
         var c = this.cells[cell - 1];
         if (this.mainboard) {
-
-            //console.log(cell);
+            console.log(cell);
+            console.log(this.cells);
             c.className = this.playerOne ? "X" : "O";
             c.innerHTML = this.playerOne ? "X" : "O";
         }
@@ -119,7 +119,7 @@ window.onload = function () {
 
     var gb = new GameBoard();
     var playerOne = new Agent();
-    var playerTwo = new AgentTwo();
+    var playerTwo = new Agent();
 
     newGame.onclick = function () {
         gb.reset();
